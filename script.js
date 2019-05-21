@@ -1,42 +1,47 @@
-// variabele die alle content van de modale vensters heeft
-const modaalContent = document.querySelectorAll(".modaalContent");
+const modaalVenster = {
+	alleInhoud: document.querySelectorAll('.modaalContent'),
+	alleKnoppen: document.querySelectorAll('.modaal-knop'),
 
-// alle modale content verwijderen uit de document
-for (var i = 0; i < modaalContent.length; i++) {
-	let modaalNode = modaalContent[i];
-	modaalNode.parentNode.removeChild(modaalNode);
+	maakAchtergrond() {
+		let achtergrond = document.createElement('div');
+		achtergrond.classList.add('modaal-achtergrond');
+		achtergrond.addEventListener('click', () => this.sluiten());
+		return achtergrond;
+	},
+	maakModaal() {
+		let modaal = document.createElement('div');
+		modaal.className = 'modaal';
+		modaal.addEventListener('click', (evt) => evt.stopPropagation());
+		return modaal;
+	},
+	maakSluitKnop() {
+		let sluitknop = document.createElement('div');
+		sluitknop.className = 'sluit-knop';
+		sluitknop.innerHTML = '&#x00D7';
+		sluitknop.addEventListener('click', () => this.sluiten());
+		return sluitknop;
+	}, 
+	open(elem) {
+		this.achtergrond = this.maakAchtergrond();
+		this.sluitKnop   = this.maakSluitKnop();
+		this.modaal		 = this.maakModaal();
+		this.modaal.appendChild(this.sluitKnop);
+		this.modaal.appendChild(elem);
+		this.achtergrond .appendChild(this.modaal);
+		document.body.appendChild(this.achtergrond);
+	},
+	sluiten() {
+		this.modaal.innerHTML = '';
+		document.body.removeChild(this.achtergrond);
+	}
 }
-//nodelist van alle modale knoppen die inhoud moeten oproepen
-const modaalKnoppen = document.querySelectorAll(".modaal-knop");
-const modaalKnoppenArray = [];
-
-//toekomstje node-elementen
-let modaalAchtergrond = document.createElement('div');
-modaalAchtergrond.className = 'modaal-achtergrond';
-let modaal = document.createElement('div');
-modaal.className = 'modaal';
-let sluitKnop = document.createElement('button');
-sluitKnop.className = 'sluit-knop';
-sluitKnop.innerHTML = '&#x00D7;';
-
-const voegInhoudToe = (event) => {
-	const teller = modaalKnoppenArray.indexOf(event.target);
-	console.log(teller);
-	modaal.appendChild(sluitKnop);
-	modaal.appendChild(modaalContent[teller]);
-	modaalAchtergrond.appendChild(modaal);
-	document.body.appendChild(modaalAchtergrond);
+// initieren: inhoud verwijderen en knoppen event geven
+for (let i= 0; i<modaalVenster.alleInhoud.length; i++) {
+	modaalVenster.alleInhoud[i].parentNode.removeChild(modaalVenster.alleInhoud[i]);
 }
-
-const sluitModaal = () => {
-	modaal.innerHTML = '';
-	modaalAchtergrond.innerHTML = '';
-	document.body.removeChild(modaalAchtergrond);
-}
-
-sluitKnop.addEventListener('click', sluitModaal);
-
-for(let i = 0; i < modaalKnoppen.length; i++) {
-	modaalKnoppenArray.push(modaalKnoppen[i]);
-	modaalKnoppen[i].addEventListener('click', voegInhoudToe);
+for (let i=0; i<modaalVenster.alleKnoppen.length; i++) {
+	modaalVenster.alleKnoppen[i].addEventListener('click', () => {
+		let inhoud = modaalVenster.alleInhoud[i];
+		modaalVenster.open(inhoud);
+	})
 }
